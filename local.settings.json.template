@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+
+    "AUTOTASK_INTEGRATION_CODE": "",
+    "AUTOTASK_USER": "",
+    "AUTOTASK_SECRET": "",
+
+    "APIKey_STS":  "STS.91f688dd-fd30-44e6-9640-f6203f0b2acd"
+  }
+}
