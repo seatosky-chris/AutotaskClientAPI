@@ -98,6 +98,7 @@ module.exports = async function (context, req) {
 
             // "Query" or "Count"
             } else if (type == "query" || type == "count") {
+
                 var queryObj = {
                     filter: [
                         {
@@ -108,11 +109,12 @@ module.exports = async function (context, req) {
                                     "field": (endpoint == "Companies" ? "id" : "companyID"),
                                     "value": orgID
                                 },
-                                filters[0]
+                                (filters && filters[0] ? filters[0] : {})
                             ]
                         }
                     ]
                 };
+
                 if (includeFields) {
                     queryObj.includeFields = includeFields;
                 }
