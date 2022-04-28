@@ -16,12 +16,18 @@ module.exports = async function (context, req) {
 
     let apiKey;
     let companyAcronym;
+    let validatedApiKeyName;
     let apiKeyValid = false;
     // validate api key
     if (headers.apikey) {
-        apiKey = headers.apikey;
-        let validatedApiKeyName = Object.keys(process.env).find(key => key.startsWith("APIKey_") && process.env[key] === apiKey);
-        companyAcronym = validatedApiKeyName.substring(validatedApiKeyName.indexOf("_") + 1);
+        apiKey = getParameterCaseInsensitive(headers, "apikey");
+        
+        if (apiKey) {
+            validatedApiKeyName = Object.keys(process.env).find(key => key.startsWith("APIKey_") && process.env[key] === apiKey);
+        }
+        if (validatedApiKeyName) {
+            companyAcronym = validatedApiKeyName.substring(validatedApiKeyName.indexOf("_") + 1);
+        }
         if (validatedApiKeyName && companyAcronym) {
             apiKeyValid = true;
         }
