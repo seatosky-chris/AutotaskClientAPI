@@ -35,10 +35,10 @@ module.exports = async function (context, req) {
 
     const endpoint = (params && params.get('endpoint'));
     let id = (params && params.get('id'));
-    let filters = req.body.filters ? req.body.filters : null;
-    let includeFields = req.body.includeFields ? req.body.includeFields : null;
+    let filters = req.body.filters ? JSON.parse(req.body.filters) : null;
+    let includeFields = req.body.includeFields ? JSON.parse(req.body.includeFields) : null;
     const type = (params && params.get('type')); // 'query', 'get', 'count', 'create', 'update'
-    let payload = req.body.payload ? req.body.payload : null; // for 'create' or 'update'
+    let payload = req.body.payload ? JSON.parse(req.body.payload) : null; // for 'create' or 'update'
 
     // prelim check to see if endpoint and type are allowed
     if (!Object.keys(allowedEndpoints).includes(endpoint)) {
@@ -78,9 +78,9 @@ module.exports = async function (context, req) {
             // Add company ID to included fields so we can filter returned data
             if (includeFields) {
                 if (endpoint == "Companies" && !includeFields.includes("id")) {
-                    includeFields += "id";
+                    includeFields.push("id");
                 } else if (!includeFields.includes("companyID")) {
-                    includeFields += "companyID";
+                    includeFields.push("companyID");
                 }
             }
 
