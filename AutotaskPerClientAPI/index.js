@@ -3,6 +3,7 @@ const {AutotaskRestApi} = require('@apigrate/autotask-restapi');
 const allowedEndpoints = {
     Companies: ['query', 'get'],
     CompanyLocations: ['query', 'get', 'count'],
+    Contacts: ['query', 'get', 'count', 'update'],
     Contracts: ['query', 'get', 'count'],
     ConfigurationItems: ['query', 'get', 'count'],
     Tickets: ['query', 'get', 'count', 'create', 'update'],
@@ -35,10 +36,13 @@ module.exports = async function (context, req) {
 
     const endpoint = (params && params.get('endpoint'));
     let id = (params && params.get('id'));
-    let filters = req.body.filters ? JSON.parse(req.body.filters) : null;
-    let includeFields = req.body.includeFields ? JSON.parse(req.body.includeFields) : null;
+    let filters = req.body.filters ? req.body.filters : null;
+    if (typeof filters == "string") { filters = JSON.parse(filters); }
+    let includeFields = req.body.includeFields ? req.body.includeFields : null;
+    if (typeof includeFields == "string") { includeFields = JSON.parse(includeFields); }
     const type = (params && params.get('type')); // 'query', 'get', 'count', 'create', 'update'
-    let payload = req.body.payload ? JSON.parse(req.body.payload) : null; // for 'create' or 'update'
+    let payload = req.body.payload ? req.body.payload : null; // for 'create' or 'update'
+    if (typeof payload == "string") { payload = JSON.parse(payload); }
 
     // prelim check to see if endpoint and type are allowed
     if (!Object.keys(allowedEndpoints).includes(endpoint)) {
