@@ -20,8 +20,8 @@ module.exports = async function (context, req) {
     let validatedApiKeyName;
     let apiKeyValid = false;
     // validate api key
-    if (headers.apikey) {
-        apiKey = getParameterCaseInsensitive(headers, "apikey");
+    if (headers["x-api-key"]) {
+        apiKey = getParameterCaseInsensitive(headers, "x-api-key");
         
         if (apiKey) {
             validatedApiKeyName = Object.keys(process.env).find(key => key.startsWith("APIKey_") && process.env[key] === apiKey);
