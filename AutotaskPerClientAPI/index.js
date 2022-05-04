@@ -179,6 +179,50 @@ module.exports = async function (context, req) {
                     return;
                 }
 
+            // "Create" for TicketNotes (needs to use a child endpoint)
+            } else if  (endpoint == "TicketNotes" && type == "create") {
+                var ticketParentId = getParameterCaseInsensitive(payload, "ticketID");
+                if (payload && ticketParentId != undefined && payload) {
+                    let ticketBody = await api.Tickets.get(ticketParentId);
+
+                    if (ticketBody && ticketBody.item) {
+                        var payloadCompanyID = getParameterCaseInsensitive(ticketBody.item, "companyID");
+                        if (payloadCompanyID != undefined) {
+                            if (payloadCompanyID == orgID) {
+                                responseBody = await api.TicketNotes.create(ticketParentId, payload);
+                            } else {
+                                ImmediateFailure(
+                                    context, 
+                                    403, 
+                                    `A create request was refused for company id '${payloadCompanyID}', it is not part of the allowed organization.`, 
+                                    `Access was denied for create request to '${endpoint}' with companyID '${payloadCompanyID}'.`);
+                                return;
+                            }
+                        } else {
+                            ImmediateFailure(
+                                context, 
+                                405, 
+                                "A bad payload was sent to the 'create' endpoint, could not find a ticket with that ID: " + JSON.stringify(payload), 
+                                "Bad payload sent. Could not find a ticket with that Ticket ID.");
+                            return;
+                        }
+                    } else {
+                        ImmediateFailure(
+                            context, 
+                            405, 
+                            "A bad payload was sent to the 'create' endpoint, could not find a ticket with that ID: " + JSON.stringify(payload), 
+                            "Bad payload sent. Could not find a ticket with that Ticket ID.");
+                        return;
+                    }
+                } else {
+                    ImmediateFailure(
+                        context, 
+                        405, 
+                        "A bad payload was sent to the 'create' endpoint: " + JSON.stringify(payload), 
+                        "Bad payload sent.");
+                    return;
+                }
+
             // "Create"
             } else if (type == "create") {
                 var payloadCompanyID = getParameterCaseInsensitive(payload, "companyID");
