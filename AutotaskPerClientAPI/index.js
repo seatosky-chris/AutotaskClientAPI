@@ -1,4 +1,5 @@
 const {AutotaskRestApi} = require('@apigrate/autotask-restapi');
+const fetch = require("node-fetch-commonjs");
 
 const allowedEndpoints = {
     Companies: ['query', 'get'],
@@ -78,6 +79,42 @@ module.exports = async function (context, req) {
                 process.env.AUTOTASK_INTEGRATION_CODE 
             );
             let api = await autotask.api();
+
+            // Verify the Autotask API key works (the library doesn't always provide a nice error message)
+            try {
+                let fetchParms = {
+                    method: 'GET',
+                    headers: {
+                    "Content-Type": "application/json",
+                    "User-Agent": "Apigrate/1.0 autotask-restapi NodeJS connector"
+                    }
+                };
+                fetchParms.headers.ApiIntegrationcode = process.env.AUTOTASK_INTEGRATION_CODE;
+                fetchParms.headers.UserName =  process.env.AUTOTASK_USER;
+                fetchParms.headers.Secret = process.env.AUTOTASK_SECRET;
+
+                let test_url = `${autotask.zoneInfo ? autotask.zoneInfo.url : autotask.base_url}V${autotask.version}/Companies/entityInformation`;
+                let response = await fetch(`${test_url}`, fetchParms);
+                if(!response.ok){
+                    var result = await response.text();
+                    if (!result) {
+                        result = `${response.status} - ${response.statusText}`;
+                    }
+                    throw result;
+                }
+            } catch (error) {
+                if (error.toString().startsWith("401")) {
+                    error = `API Key Unauthorized. (${error.toString()})`;
+                }
+                context.log.error(error);
+                
+                ImmediateFailure(
+                    context, 
+                    400, 
+                    `A request was refused. The Autotask Client API is not currently working due to the error: ${error.toString()}`, 
+                    `The Autotask Client API is not currently working.`);
+                return;
+            }
 
             // Add company ID to included fields so we can filter returned data
             if (includeFields) {
