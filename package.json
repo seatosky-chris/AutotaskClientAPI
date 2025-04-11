@@ -2,12 +2,13 @@
   "name": "autotaskclientapi",
   "version": "1.0.0",
   "description": "",
+  "main": "AutotaskPerClientAPI/index.js",
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@apigrate/autotask-restapi": "^0.6.0",
-    "node-fetch-commonjs": "^3.2.4"
+    "@apigrate/autotask-restapi": "^2.0.1",
+    "@azure/functions": "^4.7.0"
   }
 }
