@@ -15,7 +15,10 @@ app.http('AutotaskPerClientAPI', {
     methods: ['GET', 'POST'],
     authLevel: 'function',
     handler: async (req, context) => {
-        const params = new URLSearchParams(req.query);
+        let params = new URLSearchParams(req.query);
+        if (!params || !params.get('endpoint')) {
+            params = await req.json();
+        }
         const headers = req.headers;
         context.log('JavaScript HTTP trigger function processed a request.');
 
@@ -38,14 +41,30 @@ app.http('AutotaskPerClientAPI', {
             }
         }
 
-        const endpoint = (params && params.get('endpoint'));
-        let id = (params && params.get('id'));
-        let filters = params.filters ? params.get('filters') : null;
+        let endpoint;
+        let id;
+        let filters;
+        let includeFields;
+        let type;
+        let payload;
+        if (typeof params.get === "function") { 
+            endpoint = (params && params.get('endpoint'));
+            id = (params && params.get('id'));
+            filters = params.get('filters') ? params.get('filters') : null;
+            includeFields = params.get('includeFields') ? params.get('includeFields') : null;
+            type = (params && params.get('type')); // 'query', 'get', 'count', 'create', 'update'
+            payload = params.get('payload') ? params.get('payload') : null; // for 'create' or 'update'
+        } else {
+            endpoint = (params && params.endpoint);
+            id = (params && params.id);
+            filters = params.filters ? params.filters : null;
+            includeFields = params.includeFields ? params.includeFields : null;
+            type = (params && params.type); // 'query', 'get', 'count', 'create', 'update'
+            payload = params.payload ? params.payload : null; // for 'create' or 'update'
+        }
+
         if (typeof filters == "string") { filters = JSON.parse(filters); }
-        let includeFields = params.includeFields ? params.get('includeFields') : null;
         if (typeof includeFields == "string") { includeFields = JSON.parse(includeFields); }
-        const type = (params && params.get('type')); // 'query', 'get', 'count', 'create', 'update'
-        let payload = params.payload ? params.get('payload') : null; // for 'create' or 'update'
         if (typeof payload == "string") { payload = JSON.parse(payload); }
 
         // prelim check to see if endpoint and type are allowed
