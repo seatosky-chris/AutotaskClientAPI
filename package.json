@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@apigrate/autotask-restapi": "^2.0.1",
-    "@azure/functions": "^4.7.0"
+    "@azure/functions": "^4.11.2"
   }
 }
