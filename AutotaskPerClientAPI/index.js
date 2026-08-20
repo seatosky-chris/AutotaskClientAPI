@@ -85,7 +85,7 @@ app.http('AutotaskPerClientAPI', {
 
         if (apiKeyValid && companyAcronym) {
             const orgList = require("./OrgList.json");
-            var orgID = orgList[companyAcronym];
+            const orgID = orgList[companyAcronym];
 
             if (orgID) {
                 context.log(`API Key validated, connecting to org ${companyAcronym}, ID: ${orgID}`);
